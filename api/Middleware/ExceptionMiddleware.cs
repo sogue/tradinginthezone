@@ -34,12 +34,12 @@ namespace API.Middleware
                 httpContext.Response.ContentType = "application/json";
                 httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-                var response = _environment.IsDevelopment()
+                ApiException response = _environment.IsDevelopment()
                 ? new ApiException(httpContext.Response.StatusCode, exception.Message, exception.StackTrace)
                 : new ApiException(httpContext.Response.StatusCode, "Internal Server Error");
 
-                var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-                var json = JsonSerializer.Serialize(response, options);
+                JsonSerializerOptions options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+                string json = JsonSerializer.Serialize(response, options);
 
                 await httpContext.Response.WriteAsync(json);
             }

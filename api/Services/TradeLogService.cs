@@ -16,7 +16,7 @@ namespace API.Services
     {
         public ICollection<TradeLogDto> CreateTradeLogDtosFromTradeLog(ICollection<TradeLog> tradeLogs)
         {
-            var tradeLogDtos = GroupTradesByTicker(tradeLogs);
+            ICollection<TradeLogDto> tradeLogDtos = GroupTradesByTicker(tradeLogs);
             tradeLogDtos = MarkOpenTrades(tradeLogDtos);
             return tradeLogDtos;
         }
@@ -35,7 +35,7 @@ namespace API.Services
 
         public ICollection<TradeLogDto> MarkOpenTrades(ICollection<TradeLogDto> tradeLogDtos)
         {
-            foreach (var tradeLogDto in tradeLogDtos)
+            foreach (TradeLogDto tradeLogDto in tradeLogDtos)
             {
                 if (tradeLogDto.Volume != 0)
                     tradeLogDto.IsOpen = true;
@@ -46,12 +46,12 @@ namespace API.Services
 
         public ICollection<TradeLogDto> GetOpenTrades(ICollection<TradeLogDto> tradeLogDtos)
         {
-            var openTrades = tradeLogDtos.Where(x => x.Volume != 0);
+            IEnumerable<TradeLogDto> openTrades = tradeLogDtos.Where(x => x.Volume != 0);
             return openTrades.ToList();
         }
         public double CalculateWinRate(ICollection<TradeLogDto> tradeLogDtos)
         {
-            var winningTrades = tradeLogDtos.Count(log => log.Profit >= 0);
+            int winningTrades = tradeLogDtos.Count(log => log.Profit >= 0);
             return (double)winningTrades / tradeLogDtos.Count;
         }
 
@@ -64,11 +64,11 @@ namespace API.Services
         {
             ICollection<TradeLog> logs = new Collection<TradeLog>();
 
-            using var streamReader = new StreamReader(file.OpenReadStream());
+            using StreamReader streamReader = new StreamReader(file.OpenReadStream());
             string line;
             while ((line = await streamReader.ReadLineAsync()) != null)
             {
-                var log = ConvertLineToTradeLog(line);
+                TradeLog log = ConvertLineToTradeLog(line);
                 if (log != null) logs.Add(log);
             }
 

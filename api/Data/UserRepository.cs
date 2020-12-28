@@ -40,9 +40,6 @@ namespace API.Data
             .ToListAsync();
         }
 
-
-
-
         public async Task<IEnumerable<MemberDto>> GetMembersAsync()
         {
             return await _context.Users
@@ -50,7 +47,6 @@ namespace API.Data
                 .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
         }
-
 
         public async Task<IEnumerable<TradeLog>> GetMemberTradesAsync(string userName)
         {

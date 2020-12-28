@@ -18,14 +18,12 @@ namespace API.Controllers
             _userRepository = userRepository;
         }
 
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
         {
-            var members = await _userRepository.GetMembersAsync();
+            IEnumerable<MemberDto> members = await _userRepository.GetMembersAsync();
             return Ok(members);
         }
-
 
         [HttpGet("{username}")]
         public async Task<ActionResult<MemberDto>> GetUser(string userName)
@@ -36,7 +34,7 @@ namespace API.Controllers
         [HttpGet("trades/{username}")]
         public async Task<ActionResult<IEnumerable<TradeLog>>> GetTrades(string userName)
         {
-            var trades = await _userRepository.GetMemberTradesAsync(userName);
+            IEnumerable<TradeLog> trades = await _userRepository.GetMemberTradesAsync(userName);
             return Ok(trades);
         }
     }
