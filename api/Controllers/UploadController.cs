@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using API.Data;
 using API.DTOs;
 using API.Entities;
@@ -6,9 +9,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace API.Controllers
 {
@@ -21,7 +21,8 @@ namespace API.Controllers
 
         private readonly ITradeLogService _tradeLogService;
 
-        public UploadController(IUserRepository userRepository, IMapper mapper, ITradeLogService tradeLogService, DataContext context)
+        public UploadController(IUserRepository userRepository, IMapper mapper, ITradeLogService tradeLogService,
+            DataContext context)
         {
             _userRepository = userRepository;
             _mapper = mapper;
@@ -32,26 +33,24 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<ICollection<TradeLogDto>>> AddTrades(IFormFile file)
         {
+            if (file == null) return BadRequest("Failed to import trades");
+
             string username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             AppUser user = await _userRepository.GetUserByUserNameAsync(username);
 
-            if(file == null)  return BadRequest("Failed to import trades");
-            
             ICollection<TradeLog> result = await _tradeLogService.AddTradesAsync(file);
 
-            if (result.Count == 0) return BadRequest("Failed to import trades");
 
-            if (result.Count > 0)
+            if (result?.Count > 0)
             {
                 user.TradeLogs = result;
                 _context.Update(user);
                 await _context.SaveChangesAsync();
+
+                return Ok(_tradeLogService.CreateTradeLogDtosFromTradeLog(result));
             }
 
-            if (_context.SaveChangesAsync().IsCompleted) return Ok(_tradeLogService.CreateTradeLogDtosFromTradeLog(result));
-
             return BadRequest("Failed to import trades");
-
         }
     }
 }

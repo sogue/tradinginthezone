@@ -13,13 +13,12 @@ namespace API.Controllers
     public class AccountController : BaseApiController
     {
         private readonly DataContext _context;
-        private readonly ITokenService _tokenservice;
+        private readonly ITokenService _tokenService;
 
         public AccountController(DataContext context, ITokenService tokenService)
         {
-            _tokenservice = tokenService;
+            _tokenService = tokenService;
             _context = context;
-
         }
 
         [HttpPost("login")]
@@ -33,16 +32,14 @@ namespace API.Controllers
             byte[] computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
 
             for (int i = 0; i < computedHash.Length; i++)
-            {
-                if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid password");
-            }
+                if (computedHash[i] != user.PasswordHash[i])
+                    return Unauthorized("Invalid password");
 
             return new UserDto
             {
                 UserName = user.UserName,
-                Token = _tokenservice.CreateToken(user)
+                Token = _tokenService.CreateToken(user)
             };
-
         }
 
         [HttpPost("register")]
@@ -65,9 +62,8 @@ namespace API.Controllers
             return new UserDto
             {
                 UserName = user.UserName,
-                Token = _tokenservice.CreateToken(user)
+                Token = _tokenService.CreateToken(user)
             };
-
         }
 
         private async Task<bool> UserExists(string userName)
