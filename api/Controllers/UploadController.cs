@@ -31,7 +31,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ICollection<TradeLogDto>>> AddTrades(IFormFile file)
+        public async Task<ActionResult<ICollection<TradeLog>>> AddTrades(IFormFile file)
         {
             if (file == null) return BadRequest("Failed to import trades");
 
@@ -47,7 +47,7 @@ namespace API.Controllers
                 _context.Update(user);
                 await _context.SaveChangesAsync();
 
-                return Ok(_tradeLogService.CreateTradeLogDtosFromTradeLog(result));
+                return Ok(result);
             }
 
             return BadRequest("Failed to import trades");

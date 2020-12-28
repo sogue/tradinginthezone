@@ -1,42 +1,66 @@
-<div *ngIf="results">
-  <div class="form-group col-8">
-    <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText">
-  </div>
+<div *ngIf="trades.length">
   <div class="col">
-    <h4>Imported Trades:</h4>
-    <div class="row font-weight-bold">
-      <div class="col-2">
-        Timestamp
-      </div>
-      <div class="col-2">
-        Instrument
-      </div>
-      <div class="col-4">
-        Description
-      </div>
-      <div class="col-2">
-        Volume
-      </div>
-      <div class="col-2">
-        Total Price
+    <div>
+      <h4>Trader Profile:</h4>
+      <div class="col">
+        <div class="row font-weight-bold">
+          <div class="col-2">
+            Total trades: {{trader.totalTrades}}
+          </div>
+          <div class="col-2">
+            Winning trades: {{trader.winningTrades}}
+          </div>
+          <div class="col-2">
+            Losing trades: {{trader.losingTrades}}
+          </div>
+          <div class="col-2">
+            Open positions: {{trader.openPositions}}
+          </div>
+          <div class="col-2">
+            Win rate: {{trader.winRate | percent }}
+          </div>
+          <div class="col-2">
+            Total Profit: {{trader.totalProfit | currency:'USD'}}
+          </div>
+        </div>
       </div>
     </div>
-    <div class="row" *ngFor="let result of results | filter:searchText">
-      <div class="col-2">
-        {{result.date | date: 'yyyy-MM-dd'}}
+    <br>
+    <h4>Analyzed Trades:</h4>
+    <div class="col">
+      <div class="row font-weight-bold">
+        <div class="col-2">
+          Timestamp
+        </div>
+        <div class="col-2">
+          Ticker
+        </div>
+        <div class="col-2">
+          Profit
+        </div>
+        <div class="col-2">
+          Status
+        </div>
+        <div class="col-2">
+          Remaining
+        </div>
       </div>
-      <div class="col-2">
-        {{result.ticker}}
+      <div class="row" *ngFor="let trade of trades | filter:searchText">
+        <div class="col-2">
+          {{trade.date | date: 'yyyy-MM-dd'}}
+        </div>
+        <div class="col-2">
+          {{trade.ticker}}
+        </div>
+        <div class="col-2">
+          {{trade.profit | currency:'USD'}}
+        </div>
+        <div class="col-2" *ngIf="trade.isOpen">
+          OPEN
+        </div>
+        <div class="col-2" *ngIf="trade.isOpen">
+          {{trade.volume}}
+        </div>
       </div>
-      <div class="col-4">
-        {{result.instrument}}
-      </div>
-      <div class="col-2">
-        {{result.volume}}
-      </div>
-      <div class="col-2">
-        {{result.profit | currency:'USD'}}
-      </div>
-
     </div>
   </div>

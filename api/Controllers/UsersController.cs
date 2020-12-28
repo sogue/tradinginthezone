@@ -12,10 +12,12 @@ namespace API.Controllers
     public class UsersController : BaseApiController
     {
         public IUserRepository _userRepository { get; }
+        private readonly ITradeLogService _tradeLogService;
 
-        public UsersController(IUserRepository userRepository)
+        public UsersController(IUserRepository userRepository, ITradeLogService tradeLogService)
         {
             _userRepository = userRepository;
+            _tradeLogService = tradeLogService;
         }
 
         [HttpGet]
@@ -36,6 +38,13 @@ namespace API.Controllers
         {
             IEnumerable<TradeLog> trades = await _userRepository.GetMemberTradesAsync(userName);
             return Ok(trades);
+        }
+
+        [HttpGet("profiles/{username}")]
+        public async Task<ActionResult<TraderDto>> GetTraderProfile(string userName)
+        {
+            IEnumerable<TradeLog> trades = await _userRepository.GetMemberTradesAsync(userName);
+            return Ok(_tradeLogService.CreateTraderProfile(trades));
         }
     }
 }

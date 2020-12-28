@@ -5,6 +5,7 @@ import { Member } from '../_models/member';
 import { PaginatedResult } from '../_models/pagination';
 import { TradeLog } from '../_models/trade-log';
 import { TradeLogDetail } from '../_models/trade-log-detail';
+import { Trader } from '../_models/trader';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,7 @@ export class MembersService {
   }
 
   getMemberTrades(userName: string) {
-    return this.http.get<TradeLogDetail[]>(this.baseUrl + 'users/trades/' + userName);
+    return this.http.get<Trader>(this.baseUrl + 'users/profiles/' + userName);
   }
 
   sendTradeLogFile(formData: FormData) {

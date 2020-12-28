@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { take } from 'rxjs/operators';
 import { Member } from '../_models/member';
+import { TradeLog } from '../_models/trade-log';
 import { TradeLogDetail } from '../_models/trade-log-detail';
+import { Trader } from '../_models/trader';
 import { User } from '../_models/user';
 import { AccountService } from '../_services/account.service';
 import { MembersService } from '../_services/members.service';
@@ -13,19 +15,20 @@ import { MembersService } from '../_services/members.service';
 })
 export class TradesComponent implements OnInit {
   user: User;
-  results: TradeLogDetail[];
+  trader: Trader;
+  trades: TradeLog[];
   searchText: string;
   constructor(public accountService: AccountService, public memberService: MembersService) {
     this.accountService.currentUser$.pipe(take(1)).subscribe(user => this.user = user);
   }
 
   ngOnInit(): void {
-    this.loadMemberTrades();
-    console.log(this.results);
+    this.loadTrader();
   }
-  loadMemberTrades() {
-    this.memberService.getMemberTrades(this.user.userName).subscribe(results => {
-      this.results = results;
+  loadTrader() {
+    this.memberService.getMemberTrades(this.user.userName).subscribe(result => {
+      this.trader = result;
+      this.trades = result.trades;
     })
   }
 

@@ -10,28 +10,27 @@
 <div class="col" *ngIf="feedback!= undefined">
   <h4>{{feedback}}</h4>
 </div>
-
 <div *ngIf="results.length">
-  <div class="form-group col-8">
-    <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText">
+  <div class="form-group col-6">
+    <input type="text" class="form-control" placeholder="Search trades..." [(ngModel)]="searchText">
   </div>
   <div class="col">
-    <h4>Analyzed Trades:</h4>
+    <h4>Imported Trades:</h4>
     <div class="row font-weight-bold">
       <div class="col-2">
         Timestamp
       </div>
       <div class="col-2">
-        Ticker
+        Instrument
+      </div>
+      <div class="col-4">
+        Description
       </div>
       <div class="col-2">
-        Profit
+        Volume
       </div>
       <div class="col-2">
-        Status
-      </div>
-      <div class="col-2">
-        Remaining
+        Total Price
       </div>
     </div>
     <div class="row" *ngFor="let result of results | filter:searchText">
@@ -41,15 +40,15 @@
       <div class="col-2">
         {{result.ticker}}
       </div>
+      <div class="col-4">
+        {{result.instrument}}
+      </div>
+      <div class="col-2">
+        {{result.volume}}
+      </div>
       <div class="col-2">
         {{result.profit | currency:'USD'}}
       </div>
-      <div class="col-2" *ngIf="result.isOpen">
-        OPEN
-      </div>
-      <div class="col-2" *ngIf="result.isOpen">
-        {{result.volume}}
-      </div>
+
     </div>
   </div>
-</div>

@@ -1,7 +1,3 @@
-using API.DTOs;
-using API.Entities;
-using API.Interfaces;
-using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,77 +5,68 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using API.DTOs;
+using API.Entities;
+using API.Interfaces;
+using Microsoft.AspNetCore.Http;
 
 namespace API.Services
 {
     public class TradeLogService : ITradeLogService
     {
-        public ICollection<TradeLogDto> CreateTradeLogDtosFromTradeLog(ICollection<TradeLog> tradeLogs)
+        public IEnumerable<TradeLogDto> CreateTradeLogDtos(IEnumerable<TradeLog> tradeLogs)
         {
-            ICollection<TradeLogDto> tradeLogDtos = GroupTradesByTicker(tradeLogs);
-            tradeLogDtos = MarkOpenTrades(tradeLogDtos);
+            var tradeLogDtos = GroupTradesByTicker(tradeLogs);
             return tradeLogDtos;
         }
 
-        private static ICollection<TradeLogDto> GroupTradesByTicker(ICollection<TradeLog> tradeLogs)
+        private static IEnumerable<TradeLogDto> GroupTradesByTicker(IEnumerable<TradeLog> tradeLogs)
         {
             return tradeLogs.GroupBy(i => new { i.Ticker }).Select(g => new TradeLogDto
             {
                 Date = g.Select(i => i.Date).OrderBy(i => i).LastOrDefault(),
                 Ticker = g.Key.Ticker,
                 Volume = g.Sum(i => i.Volume),
+                IsOpen = g.Sum(i => i.Volume) != 0,
                 Profit = g.Sum(i => -i.Profit),
-                Transactions = g.Select(i => i.Instrument).ToList(),
-            }).OrderByDescending(x => x.Profit).ToList();
+                Transactions = g.Select(i => i.Instrument).ToList()
+            }).OrderByDescending(x => x.Profit);
         }
 
-        public ICollection<TradeLogDto> MarkOpenTrades(ICollection<TradeLogDto> tradeLogDtos)
+        public TraderDto CreateTraderProfile(IEnumerable<TradeLog> trades)
         {
-            foreach (TradeLogDto tradeLogDto in tradeLogDtos)
+            var tradeLogDtos = CreateTradeLogDtos(trades).ToList();
+
+            return new TraderDto
             {
-                if (tradeLogDto.Volume != 0)
-                    tradeLogDto.IsOpen = true;
-            }
-
-            return tradeLogDtos;
-        }
-
-        public ICollection<TradeLogDto> GetOpenTrades(ICollection<TradeLogDto> tradeLogDtos)
-        {
-            IEnumerable<TradeLogDto> openTrades = tradeLogDtos.Where(x => x.Volume != 0);
-            return openTrades.ToList();
-        }
-        public double CalculateWinRate(ICollection<TradeLogDto> tradeLogDtos)
-        {
-            int winningTrades = tradeLogDtos.Count(log => log.Profit >= 0);
-            return (double)winningTrades / tradeLogDtos.Count;
-        }
-
-        public decimal CalculateTotalProfit(ICollection<TradeLogDto> tradeLogDtos)
-        {
-            return tradeLogDtos.Where(log => !log.IsOpen).Sum(log => log.Profit).GetValueOrDefault();
+                TotalTrades = tradeLogDtos.Count,
+                WinningTrades = tradeLogDtos.Where(y => y.IsOpen == false).Count(x => x.Profit >= 0),
+                LosingTrades = tradeLogDtos.Where(y => y.IsOpen == false).Count(x => x.Profit < 0),
+                OpenPositions = tradeLogDtos.Count(x => x.Volume != 0),
+                TotalProfit = tradeLogDtos.Sum(log => log.Profit),
+                WinRate = Decimal.Divide(tradeLogDtos.Count(x => x.Profit >= 0), tradeLogDtos.Count),
+                Trades = tradeLogDtos
+            };
         }
 
         public async Task<ICollection<TradeLog>> AddTradesAsync(IFormFile file)
         {
             ICollection<TradeLog> logs = new Collection<TradeLog>();
 
-            using StreamReader streamReader = new StreamReader(file.OpenReadStream());
+            using var streamReader = new StreamReader(file.OpenReadStream());
             string line;
             while ((line = await streamReader.ReadLineAsync()) != null)
             {
-                TradeLog log = ConvertLineToTradeLog(line);
+                var log = ConvertLineToTradeLog(line);
                 if (log != null) logs.Add(log);
             }
 
-            return logs;
+            return logs.OrderBy(x => x.Date).ToList();
         }
-
-
 
         private TradeLog ConvertLineToTradeLog(string line)
         {
-            string[] splitLine = line.Split('|');
+            var splitLine = line.Split('|');
             return splitLine.Length == 16
                 ? new TradeLog
                 {
@@ -87,7 +74,7 @@ namespace API.Services
                     Instrument = splitLine[3],
                     Date = DateTime.ParseExact(splitLine[7], "yyyyMMdd", CultureInfo.InvariantCulture),
                     Volume = decimal.Parse(splitLine[10], CultureInfo.InvariantCulture),
-                    Profit = decimal.Parse(splitLine[13], CultureInfo.InvariantCulture),
+                    Profit = decimal.Parse(splitLine[13], CultureInfo.InvariantCulture)
                 }
                 : null;
         }
