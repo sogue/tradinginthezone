@@ -22,7 +22,7 @@ namespace API.Services
 
         private static IEnumerable<TradeLogDto> GroupTradesByTicker(IEnumerable<TradeLog> tradeLogs)
         {
-            return tradeLogs.GroupBy(i => new { i.Ticker }).Select(g => new TradeLogDto
+            return tradeLogs.GroupBy(i => new {i.Ticker}).Select(g => new TradeLogDto
             {
                 Date = g.Select(i => i.Date).OrderBy(i => i).LastOrDefault(),
                 Ticker = g.Key.Ticker,
@@ -43,8 +43,8 @@ namespace API.Services
                 WinningTrades = tradeLogDtos.Where(y => y.IsOpen == false).Count(x => x.Profit >= 0),
                 LosingTrades = tradeLogDtos.Where(y => y.IsOpen == false).Count(x => x.Profit < 0),
                 OpenPositions = tradeLogDtos.Count(x => x.Volume != 0),
-                TotalProfit = tradeLogDtos.Sum(log => log.Profit),
-                WinRate = Decimal.Divide(tradeLogDtos.Count(x => x.Profit >= 0), tradeLogDtos.Count),
+                TotalProfit = tradeLogDtos.Where(x => !x.IsOpen).Sum(log => log.Profit),
+                WinRate = decimal.Divide(tradeLogDtos.Count(x => x.Profit >= 0), tradeLogDtos.Count(x => !x.IsOpen)),
                 Trades = tradeLogDtos
             };
         }
