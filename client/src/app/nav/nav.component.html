@@ -9,16 +9,10 @@
                 <li class="nav-item">
                     <a class="nav-link" routerLink='/trades' routerLinkActive='active'>My Trades</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" routerLink='/members' routerLinkActive='active'>Members</a>
-                </li>
             </ul>
         </ng-container>
         <div class="dropdown" *ngIf="accountService.currentUser$ | async as user" dropdown>
             <a class="dropdown-toggle text-light" dropdownToggle>Welcome {{user.userName | titlecase}}</a>
-            <div class="dropdown-menu mt-3" *dropdownMenu>
-                <a class="dropdown-item">Edit Profile</a>
-                <div class="dropdown-divider"></div>
                 <a class="dropdown-item" (click)="logout()">Logout</a>
             </div>
         </div>
