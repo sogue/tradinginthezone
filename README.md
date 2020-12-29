@@ -9,6 +9,7 @@ Entity Framework
 ```txt
  |-- api: ASP.NET Core 
  |-- client: Angular 
+ |-- testfiles: Testfiles to Upload 
 ```
 
 ## Setup environments
