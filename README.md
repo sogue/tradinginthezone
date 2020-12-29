@@ -1,6 +1,5 @@
 # Trade-Log
 
-Trade-Analyzer
 .NET Core
 Angular
 Entity Framework
@@ -16,10 +15,9 @@ Entity Framework
 
 ### API
 
-To setup the python dev environment run the following command:
+To setup the dotnet dev environment run the following command:
 
 ```shell
-cd api
 dotnet watch run
 ```
 Navigate to `https://localhost:5001/swagger`.
@@ -29,7 +27,6 @@ Navigate to `https://localhost:5001/swagger`.
 To setup the angular environment run the following command:
 
 ```shell
-cd client
 ng serve
 ```
 Navigate to `https://localhost:4200/`.
