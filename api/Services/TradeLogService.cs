@@ -16,7 +16,7 @@ namespace API.Services
     {
         public IEnumerable<TradeLogDto> CreateTradeLogDtos(IEnumerable<TradeLog> tradeLogs)
         {
-            var tradeLogDtos = GroupTradesByTicker(tradeLogs);
+            IEnumerable<TradeLogDto> tradeLogDtos = GroupTradesByTicker(tradeLogs);
             return tradeLogDtos;
         }
 
@@ -35,8 +35,17 @@ namespace API.Services
 
         public TraderDto CreateTraderProfile(IEnumerable<TradeLog> trades)
         {
-            var tradeLogDtos = CreateTradeLogDtos(trades).ToList();
+            if (trades == null) return new TraderDto();
+            List<TradeLogDto> tradeLogDtos = CreateTradeLogDtos(trades).ToList();
 
+            return tradeLogDtos.Count > 1
+                ? MapTraderDto(tradeLogDtos)
+                : new TraderDto();
+
+        }
+
+        private TraderDto MapTraderDto(List<TradeLogDto> tradeLogDtos)
+        {
             return new TraderDto
             {
                 TotalTrades = tradeLogDtos.Count,
@@ -44,7 +53,8 @@ namespace API.Services
                 LosingTrades = tradeLogDtos.Where(y => y.IsOpen == false).Count(x => x.Profit < 0),
                 OpenPositions = tradeLogDtos.Count(x => x.Volume != 0),
                 TotalProfit = tradeLogDtos.Where(x => !x.IsOpen).Sum(log => log.Profit),
-                WinRate = decimal.Divide(tradeLogDtos.Count(x => x.Profit >= 0), tradeLogDtos.Count(x => !x.IsOpen)),
+                WinRate =
+                    decimal.Divide(tradeLogDtos.Count(x => x.Profit >= 0), tradeLogDtos.Count(x => !x.IsOpen)),
                 Trades = tradeLogDtos
             };
         }
@@ -53,11 +63,11 @@ namespace API.Services
         {
             ICollection<TradeLog> logs = new Collection<TradeLog>();
 
-            using var streamReader = new StreamReader(file.OpenReadStream());
+            using StreamReader streamReader = new StreamReader(file.OpenReadStream());
             string line;
             while ((line = await streamReader.ReadLineAsync()) != null)
             {
-                var log = ConvertLineToTradeLog(line);
+                TradeLog log = ConvertLineToTradeLog(line);
                 if (log != null) logs.Add(log);
             }
 
@@ -66,7 +76,7 @@ namespace API.Services
 
         private TradeLog ConvertLineToTradeLog(string line)
         {
-            var splitLine = line.Split('|');
+            string[] splitLine = line.Split('|');
             return splitLine.Length == 16
                 ? new TradeLog
                 {
