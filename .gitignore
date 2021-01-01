@@ -442,6 +442,5 @@ $RECYCLE.BIN/
 !.vscode/extensions.json
 
 # Ignore Special
-appsettings.json
 tradingzone.db
 /node_modules
