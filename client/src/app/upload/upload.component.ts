@@ -9,7 +9,9 @@ import { MembersService } from '../_services/members.service';
   styleUrls: ['./upload.component.scss']
 })
 export class UploadComponent implements OnInit {
+  displayedColumns: string[] = ['key', 'value'];
   title = 'tradeanalyzer';
+  dataSource: any;
   feedback: string;
   uploadForm: FormGroup;
   results: TradeLog[] = [];
@@ -38,11 +40,14 @@ export class UploadComponent implements OnInit {
     formData.append('file', this.uploadForm.get('profile').value);
     this.sendTradeLogFile(formData);
   }
-
+  public orderByKey(a) {
+    return a.key;
+  }
   private sendTradeLogFile(formData: FormData): void {
     this.memberService.sendTradeLogFile(formData).subscribe(
       result => {
         this.results = result;
+        this.dataSource = result;
       },
       error => {
         this.feedback = 'This file can not be imported.';

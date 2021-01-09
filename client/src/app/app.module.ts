@@ -17,6 +17,7 @@ import { JwtInterceptor } from './_interceptors/jwt.interceptor';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TradesComponent } from './trades/trades.component';
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { TradesComponent } from './trades/trades.component';
     ReactiveFormsModule,
     FormsModule,
     Ng2SearchPipeModule,
-    SharedModule
+    SharedModule,
+    MatTableModule
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
   { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }],
