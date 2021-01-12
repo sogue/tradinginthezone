@@ -22,14 +22,14 @@ namespace API.Services
 
         private static IEnumerable<TradeLogDto> GroupTradesByTicker(IEnumerable<TradeLog> tradeLogs)
         {
-            return tradeLogs.GroupBy(i => new {i.Ticker}).Select(g => new TradeLogDto
+            return tradeLogs.GroupBy(i => new { i.Ticker }).Select(g => new TradeLogDto
             {
                 Date = g.Select(i => i.Date).OrderBy(i => i).LastOrDefault(),
                 Ticker = g.Key.Ticker,
                 Volume = g.Sum(i => i.Volume),
                 IsOpen = g.Sum(i => i.Volume) != 0,
-                Profit = g.Sum(i => -i.Profit),
-                Transactions = g.Select(i => i.Instrument).ToList()
+                Profit = g.Sum(i => -i.TotalValue),
+                Transactions = g.Select(i => i.Description).ToList()
             }).OrderByDescending(x => x.Profit);
         }
 
@@ -76,17 +76,36 @@ namespace API.Services
 
         private TradeLog ConvertLineToTradeLog(string line)
         {
+
             string[] splitLine = line.Split('|');
+
             return splitLine.Length == 16
-                ? new TradeLog
-                {
-                    Ticker = splitLine[3].Split(' ').FirstOrDefault(),
-                    Instrument = splitLine[3],
-                    Date = DateTime.ParseExact(splitLine[7], "yyyyMMdd", CultureInfo.InvariantCulture),
-                    Volume = decimal.Parse(splitLine[10], CultureInfo.InvariantCulture),
-                    Profit = decimal.Parse(splitLine[13], CultureInfo.InvariantCulture)
-                }
+                ? NewMethod(splitLine)
                 : null;
+        }
+
+        private static TradeLog NewMethod(string[] splitLine)
+        {
+            var log = new TradeLog
+            {
+                Type = splitLine[0],
+                TransactionId = splitLine[1],
+                ContractName = splitLine[2],
+                Ticker = splitLine[3].Split(' ').FirstOrDefault(),
+                Description = splitLine[3],
+                Exchange = splitLine[4],
+                DirectionName = splitLine[5],
+                Direction = splitLine[6],
+                Date = DateTime.ParseExact(splitLine[7] + splitLine[8], "yyyyMMddHH:mm:ss", CultureInfo.InvariantCulture),
+                Currency = splitLine[9],
+                Volume = decimal.Parse(splitLine[10], CultureInfo.InvariantCulture),
+                Multiplier = decimal.Parse(splitLine[11], CultureInfo.InvariantCulture),
+                BaseValue = decimal.Parse(splitLine[12], CultureInfo.InvariantCulture),
+                TotalValue = decimal.Parse(splitLine[13], CultureInfo.InvariantCulture),
+                Commission = decimal.Parse(splitLine[14], CultureInfo.InvariantCulture),
+                ExchangeRate = decimal.Parse(splitLine[15], CultureInfo.InvariantCulture)
+            };
+            return log;
         }
     }
 }

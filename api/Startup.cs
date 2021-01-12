@@ -12,15 +12,19 @@ namespace API
     public class Startup
     {
         private readonly IConfiguration _configuration;
-        public Startup(IConfiguration configuration)
+
+        private readonly IWebHostEnvironment _env;
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             _configuration = configuration;
+            _env = env;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddApplicationServices(_configuration);
+            services.AddApplicationServices(_configuration, _env);
             services.AddControllers();
             services.AddCors();
             services.AddIdentityServices(_configuration);
