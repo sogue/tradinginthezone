@@ -20,21 +20,11 @@ namespace API.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 
-            if (env.IsDevelopment())
-            {
-                services.AddDbContext<DataContext>(options =>
-             {
-                 options.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
-             });
-            }
-
-            else
-            {
-                services.AddDbContext<DataContext>(options =>
-           {
-               options.UseNpgsql(Environment.GetEnvironmentVariable("DefaultConnection"));
-           });
-            }
+            services.AddDbContext<DataContext>(options =>
+         {
+             string dataString = Environment.GetEnvironmentVariable("DefaultConnection") ?? configuration.GetConnectionString("DefaultConnection");
+             options.UseNpgsql(dataString);
+         });
 
             return services;
         }
