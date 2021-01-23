@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
 namespace API.Extensions
 {
     public static class ApplicationServiceExtensions
@@ -33,7 +32,7 @@ namespace API.Extensions
             {
                 services.AddDbContext<DataContext>(options =>
            {
-               options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
+               options.UseNpgsql(Environment.GetEnvironmentVariable("DefaultConnection"));
            });
             }
 

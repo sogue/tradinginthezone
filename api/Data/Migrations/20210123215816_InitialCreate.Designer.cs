@@ -5,43 +5,39 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace api.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20201229002911_InitialCreate")]
+    [Migration("20210123215816_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .UseIdentityByDefaultColumns()
-                .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.1");
 
             modelBuilder.Entity("API.Entities.AppUser", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("LastActive")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TEXT");
 
                     b.Property<byte[]>("PasswordHash")
-                        .HasColumnType("bytea");
+                        .HasColumnType("BLOB");
 
                     b.Property<byte[]>("PasswordSalt")
-                        .HasColumnType("bytea");
+                        .HasColumnType("BLOB");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -52,26 +48,61 @@ namespace api.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("AppUserId")
-                        .HasColumnType("integer");
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("BaseValue")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Commission")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContractName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Currency")
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Direction")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DirectionName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Exchange")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("ExchangeRate")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Instrument")
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
-                    b.Property<decimal?>("Profit")
-                        .HasColumnType("numeric");
+                    b.Property<decimal>("Multiplier")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Ticker")
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("TotalValue")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TransactionId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("TEXT");
 
                     b.Property<decimal>("Volume")
-                        .HasColumnType("numeric");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 

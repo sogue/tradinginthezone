@@ -87,9 +87,6 @@ namespace api.Data.Migrations
                     b.Property<decimal>("Multiplier")
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal?>("Profit")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Ticker")
                         .HasColumnType("TEXT");
 
